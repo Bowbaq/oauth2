@@ -30,9 +30,8 @@ import (
 )
 
 const (
-	codeRedirect = 302
-	keyToken     = "oauth2_token"
-	keyNextPage  = "next"
+	keyToken    = "oauth2_token"
+	keyNextPage = "next"
 )
 
 var (
@@ -156,7 +155,7 @@ var LoginRequired = func() martini.Handler {
 		token := unmarshallToken(s)
 		if token == nil || token.Expired() {
 			next := url.QueryEscape(r.URL.RequestURI())
-			http.Redirect(w, r, PathLogin+"?next="+next, codeRedirect)
+			http.Redirect(w, r, PathLogin+"?next="+next, http.StatusFound)
 		}
 	}
 }()
@@ -168,17 +167,17 @@ func login(f *oauth2.Config, s sessions.Session, w http.ResponseWriter, r *http.
 		if next == "" {
 			next = "/"
 		}
-		http.Redirect(w, r, f.AuthCodeURL(next), codeRedirect)
+		http.Redirect(w, r, f.AuthCodeURL(next), http.StatusFound)
 		return
 	}
 	// No need to login, redirect to the next page.
-	http.Redirect(w, r, next, codeRedirect)
+	http.Redirect(w, r, next, http.StatusFound)
 }
 
 func logout(s sessions.Session, w http.ResponseWriter, r *http.Request) {
 	next := extractPath(r.URL.Query().Get(keyNextPage))
 	s.Delete(keyToken)
-	http.Redirect(w, r, next, codeRedirect)
+	http.Redirect(w, r, next, http.StatusFound)
 }
 
 func handleOAuth2Callback(f *oauth2.Config, s sessions.Session, w http.ResponseWriter, r *http.Request) {
@@ -188,13 +187,13 @@ func handleOAuth2Callback(f *oauth2.Config, s sessions.Session, w http.ResponseW
 	if err != nil {
 		// Pass the error message, or allow dev to provide its own
 		// error handler.
-		http.Redirect(w, r, PathError, codeRedirect)
+		http.Redirect(w, r, PathError, http.StatusFound)
 		return
 	}
 	// Store the credentials in the session.
 	val, _ := json.Marshal(t)
 	s.Set(keyToken, val)
-	http.Redirect(w, r, next, codeRedirect)
+	http.Redirect(w, r, next, http.StatusFound)
 }
 
 func unmarshallToken(s sessions.Session) (t *token) {
