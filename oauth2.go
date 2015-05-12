@@ -26,7 +26,6 @@ import (
 	"github.com/go-martini/martini"
 	"github.com/martini-contrib/sessions"
 	"golang.org/x/oauth2"
-	"golang.org/x/oauth2/google"
 )
 
 const (
@@ -85,12 +84,15 @@ func (t *token) ExpiryTime() time.Time {
 
 // String returns the string representation of the token.
 func (t *token) String() string {
-	return fmt.Sprintf("tokens: %v", t.Token)
+	return fmt.Sprintf("tokens: %+v", t.Token)
 }
 
 // Google returns a new Google OAuth 2.0 backend endpoint.
 func Google(conf *oauth2.Config) martini.Handler {
-	conf.Endpoint = google.Endpoint
+	conf.Endpoint = oauth2.Endpoint{
+		AuthURL:  "https://accounts.google.com/o/oauth2/v2/auth",
+		TokenURL: "https://www.googleapis.com/oauth2/v4/token",
+	}
 	return NewOAuth2Provider(conf)
 }
 
