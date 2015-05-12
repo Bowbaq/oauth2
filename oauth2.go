@@ -52,7 +52,8 @@ type Tokens interface {
 	Refresh() string
 	Expired() bool
 	ExpiryTime() time.Time
-	ExtraField(key string) interface{}
+	Extra(key string) interface{}
+	String() string
 }
 
 type token struct {
@@ -80,10 +81,6 @@ func (t *token) Expired() bool {
 // ExpiryTime returns the expiry time of the user's access token.
 func (t *token) ExpiryTime() time.Time {
 	return t.Expiry
-}
-
-func (t *token) ExtraField(key string) interface{} {
-	return t.Extra(key)
 }
 
 // String returns the string representation of the token.
