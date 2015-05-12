@@ -52,7 +52,7 @@ type Tokens interface {
 	Refresh() string
 	Expired() bool
 	ExpiryTime() time.Time
-	Extra(key string) interface{}
+	ExtraField(key string) interface{}
 }
 
 type token struct {
@@ -82,7 +82,7 @@ func (t *token) ExpiryTime() time.Time {
 	return t.Expiry
 }
 
-func (t *token) Extra(key string) interface{} {
+func (t *token) ExtraField(key string) interface{} {
 	return t.Extra(key)
 }
 
